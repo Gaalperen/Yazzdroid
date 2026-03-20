@@ -596,6 +596,7 @@ systemctl --user enable --now yazz-loop.service
 # ============================================================
 install_readme() {
 cat > "$INSTALL_DIR/README.md" <<'EOF'
+# Yazzdroid
 > Una aplicación CLI para acceder al audio, la cámara, micrófono y pantalla de cualquier dispositivo con Android.
 
 Una vez instalado, solo ejecuta yazzdroid desde la terminal de comandos. Navega a través del menú usando las teclas direccionales, ‘w’, ‘s’, ‘space’ y ‘enter’.
