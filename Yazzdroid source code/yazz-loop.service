@@ -1,0 +1,28 @@
+# Archivo que debe ser colocado en: home/.config/systemd/user 
+# Para usar: 
+#systemctl --user daemon-reload  
+#systemctl --user enable virtual-pipewire-cable.service
+#systemctl --user start virtual-pipewire-cable.service
+[Unit]
+Description=Cables Virtuales en PipeWire (OBS Mic)
+Wants=pipewire.service
+After=pipewire.service wireplumber.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# Estos comandos crean los módulos virtuales
+#	Modulo OBS_out
+ExecStart=/usr/bin/pactl load-module module-null-sink sink_name=OBS_out device.description="OBS_out"
+#	Modulo OBS_mic
+ExecStart=/usr/bin/pactl load-module module-remap-source source_name=OBS_in master=OBS_out.monitor source_properties=device.description="OBS_mic"
+
+# El comando de stop debe encontrar el ID de los módulos para poder descargarlos.
+# 1. Busca el ID de OBS_out y lo descarga.
+# 2. Busca el ID de OBS_mic y lo descarga.
+ExecStop=/usr/bin/pactl unload-module $(/usr/bin/pactl list modules | grep -B 2 "Argument: sink_name=OBS_out" | grep "Module \#" | awk '{print $2}')
+ExecStop=/usr/bin/pactl unload-module $(/usr/bin/pactl list modules | grep -B 2 "Argument: source_name=OBS_in" | grep "Module \#" | awk '{print $2}')
+
+[Install]
+WantedBy=default.target
