@@ -6,6 +6,7 @@
 Una vez instalado, solo ejecuta yazzdroid desde la terminal de comandos. Navega a través del menú usando las teclas direccionales, ‘w’, ‘s’, ‘space’ y ‘enter’.
 
 Para funcionar, Yazzdroid utiliza ‘SCRCPY’ (screen copy). No se necesita instalar nada en el teléfono, tampoco ser usuario root. Tan solo hace falta activar la ‘depuración USB’ en las opciones de desarrollador y conectar el dispositivo android al PC. 
+
 → Incluso con la depuración activada, algunos dispositivos requieren intervención manual para permitir la conexión en cada sesión.
 
 ---
