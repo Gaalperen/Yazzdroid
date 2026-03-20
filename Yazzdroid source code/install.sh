@@ -4,8 +4,7 @@ set -e
 
 APP_NAME="yazzdroid"
 INSTALL_DIR="/usr/local/bin/$APP_NAME"
-BIN_DIR="$HOME/.local/bin"
-BIN_PATH="$BIN_DIR/$APP_NAME"
+BIN_DIR="$HOME/.local/bin/$APP_NAME/"
 SERVICE_DIR="$HOME/.config/systemd/user"
 SERVICE_PATH="$SERVICE_DIR/yazz-loop.service"
 
@@ -46,7 +45,6 @@ install_scrcpy() {
 # ============================================================
 setup_dirs() {
     mkdir -p "$INSTALL_DIR"
-    mkdir -p "$BIN_DIR"
     mkdir -p "$SERVICE_DIR"
 }
 
@@ -85,7 +83,7 @@ selected_device_name=""
 menu_index=0
 
 ########################################################################################################
-# Actualizar título de la terminal
+# título de la terminal
 set_title() {
     # dinámico: YAZZDROID <device> --
     if [[ -n "$selected_device_name" ]]; then
@@ -191,7 +189,7 @@ draw_menu() {
     done
 
     echo
-    echo -e "${DIM}Usa ↑/↓ o W/S para navegar. Enter/Space/→ confirmar. Q para volver/salir.${RESET}"
+    echo -e "${DIM}Usa ↑/↓ o W/S para navegar. Enter/Space/→ confirmar. Q/←  para volver/salir.${RESET}"
 }
 
 ########################################################################################################
@@ -544,8 +542,6 @@ EOF
 
 chmod +x "$INSTALL_DIR/$APP_NAME"
 
-# crear enlace ejecutable
-ln -sf "$INSTALL_DIR/$APP_NAME" "$BIN_PATH"
 }
 
 # ============================================================
@@ -595,16 +591,30 @@ systemctl --user enable --now yazz-loop.service
 # README
 # ============================================================
 install_readme() {
-cat > "$INSTALL_DIR/README.md" <<'EOF'
-# Yazzdroid
+cat > "$BIN_DIR/README.md" <<'EOF'
+<p>
+ __      __                                   __                      __        __
+/  \    /  |                                 /  |                    /  |      /  |
+$$  \  /$$/______   ________  ________   ____$$ |  ______    ______  $$/   ____$$ |
+ $$  \/$$//      \ /        |/        | /    $$ | /      \  /      \ /  | /    $$ |
+  $$  $$/ $$$$$$  |$$$$$$$$/ $$$$$$$$/ /$$$$$$$ |/$$$$$$  |/$$$$$$  |$$ |/$$$$$$$ |
+   $$$$/  /    $$ |  /  $$/    /  $$/  $$ |  $$ |$$ |  $$/ $$ |  $$ |$$ |$$ |  $$ |
+    $$ | /$$$$$$$ | /$$$$/__  /$$$$/__ $$ \__$$ |$$ |      $$ \__$$ |$$ |$$ \__$$ |
+    $$ | $$    $$ |/$$      |/$$      |$$    $$ |$$ |      $$    $$/ $$ |$$    $$ |
+    $$/   $$$$$$$/ $$$$$$$$/ $$$$$$$$/  $$$$$$$/ $$/        $$$$$$/  $$/  $$$$$$$/
+</p>
+---
+
 > Una aplicación CLI para acceder al audio, la cámara, micrófono y pantalla de cualquier dispositivo con Android.
 
 Una vez instalado, solo ejecuta yazzdroid desde la terminal de comandos. Navega a través del menú usando las teclas direccionales, ‘w’, ‘s’, ‘space’ y ‘enter’.
 
-Para funcionar, Yazzdroid utiliza ‘SCRCPY’ (screen copy). No se necesita instalar nada en el teléfono, tampoco ser usuario root. Tan solo hace falta activar la ‘depuración USB’ en las opciones de desarrollador y conectar el dispositivo android al PC. Algunos dispositivos requieren intervención manual para permitir la conexión.
+Para funcionar, Yazzdroid utiliza ‘SCRCPY’ (screen copy). No se necesita instalar nada en el teléfono, tampoco ser usuario root. Tan solo hace falta activar la ‘depuración USB’ en las opciones de desarrollador y conectar el dispositivo android al PC.
+→ Incluso con la depuración activada, algunos dispositivos requieren intervención manual para permitir la conexión en cada sesión.
 
 ---
 ---
+
 ## Instalación
 Para instalar Yazzdroid basta con usar el script “install.sh”. Con este fin necesitas darle permisos para ejecutarse.
 
@@ -612,17 +622,25 @@ Navega en la terminal hasta el directorio donde se encuentra el script.
 > chmod +x install.sh
 
 El instalador hace lo siguiente:
-1. Verifica el tipo de gestor de paquetes, e instala scrcpy si no está instalado.
-2. Crea un script llamado yazzdroid en: “$HOME/.local/share/”. Este es aquel que se invocará desde la terminal.
-	- **Nota**: “~/.local/bin” tiene que estar en tu PATH para que funcione. Si no lo está agregalo usando:
-		> export PATH="$HOME/.local/bin:$PATH"
+1. Verifica el tipo de gestor de paquetes, e instala **scrcpy** si no está instalado.
+	- **Nota**: Yazzdroid actualmente utiliza la versión 3.3.4 de scrcpy. Los repositorios de algunas distribuciones (como Ubuntu 25.10 o inferior) distribuyen versiones más antiguas (puede comprobarse usando el comando: ‘scrcpy -v’). En esos casos es necesario instalar manualmente la versión del repositorio de [Github](https://github.com/Genymobile/scrcpy/blob/master/doc/linux.md). Allí también se lista una tabla con las versiones del programa distribuídas en diferentes repositorios.
+2. Crea un script llamado yazzdroid en: “/usr/local/bin”. Este es aquel que se invocará desde la terminal.
+	- **Nota**: “/usr/local/bin” tiene que estar en tu PATH para que funcione. Si no lo está agregalo usando:
+		> export PATH="/usr/local/bin"
+
+	En caso que no desees añadir esta ubicación al PATH, puedes mover el script a otro directorio del PATH. Si no sabes cuales directorios están registrados, utiliza  el comando:
+	> echo $PATH
+
 3. Crea un servicio de usuario llamado “yazz-loop.service” en el directorio: "$HOME/.config/systemd/user".
-4. Como buena práctica, también deja una copia de los archivos “README.md” y “Licence” en el directorio “$HOME/.local/share/”.
+	- **Nota**: Yazzdroid crea un servicio usando systemd.
+4. Como buena práctica, también deja una copia de los archivos “README.md” y “Licence” en el directorio “$HOME/.local/bin”.
 
 Puedes instalar Yazzdroid manualmente copiando el script en un directorio del path. Luego copiar el archivo del servicio en el directorio de systemd, activarlo e iniciarlo. Por defecto, el script de instalación utiliza el directorio de usuario para systemd; pero también es posible instalarlo en el directorio root.
 
 > systemctl --user daemon-reexec
 > systemctl --user enable --now yazz-loop.service
+
+---
 ## Desinstalar
 
 Desinstalarlo implica eliminar el script “yazzdroid”. Luego detener y eliminar el servicio “yazz-loop.service”.
@@ -630,7 +648,7 @@ Desinstalarlo implica eliminar el script “yazzdroid”. Luego detener y elimin
 Puedes desinstalar haciendo:
 
 → Quitar el script del path
-> rm -f $HOME/.local/share/yazzdroid
+> rm -f /usr/local/bin/yazzdroid
 
 → Detener y desactivar el servicio
 > systemctl --user stop yazz-loop.service
@@ -639,6 +657,10 @@ Puedes desinstalar haciendo:
 → Eliminar el servicio
 > rm -f ~/.config/systemd/user/yazz-loop.service
 
+→ Eliminar la carpeta con el README y Licence
+> rm -f $HOME/.local/bin/yazzdroid
+
+---
 ## Funciones
 
 Una sesión de Yazzdroid permite:
@@ -703,10 +725,10 @@ Hay 4 opciones para capturar la cámara. Pero en todas se puede seleccionar el �
 4. Trasera (con micrófono)
 
 
------
------
+---
+---
 
-Yazzdroid se distribuye de manera gratuita bajo la licencia Apache 2.0.
+Yazzdroid es FOSS, y se distribuye de manera gratuita bajo la licencia Apache 2.0.
 Copyright (C) 2026 Yazilei
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -724,11 +746,12 @@ limitations under the License.
 ---
 ---
 
-Si te gusta el proyecto puedes apoyarme en mi Kofi
+Si te gusta el proyecto puedes apoyarme en Kofi
 https://ko-fi.com/yazilei
 
 Encuentra mi arte en:
 https://linktr.ee/yazilei
+
 EOF
 }
 
@@ -736,7 +759,7 @@ EOF
 # LICENSE Apache 2.0
 # ============================================================
 install_license() {
-cat > "$INSTALL_DIR/LICENSE" <<'EOF'
+cat > "$BIN_DIR/LICENSE" <<'EOF'
 
                                  Apache License
                            Version 2.0, January 2004
@@ -946,10 +969,12 @@ EOF
 # Verificar PATH
 # ============================================================
 check_path() {
-    if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-        echo "[WARNING] ~/.local/bin no está en tu PATH"
+    if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+        echo "[WARNING] /usr/local/bin no está en tu PATH"
         echo "Añade esto a tu shell config:"
-        echo 'export PATH="$HOME/.local/bin:$PATH"'
+		echo "Tu PATH es"
+		echo $PATH
+        echo 'export PATH="/usr/local/bin:$PATH"'
     fi
 }
 
