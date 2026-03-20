@@ -1,5 +1,4 @@
-# Yazzdroid                        
-
+# Yazzdroid
 ---
 
 > Una aplicación CLI para acceder al audio, la cámara, micrófono y pantalla de cualquier dispositivo con Android.
@@ -30,7 +29,7 @@ El instalador hace lo siguiente:
 
 3. Crea un servicio de usuario llamado “yazz-loop.service” en el directorio: "$HOME/.config/systemd/user".
 	- **Nota**: Yazzdroid crea un servicio usando systemd. 
-4. Como buena práctica, también deja una copia de los archivos “README.md” y “Licence” en el directorio “$HOME/.local/share/”.
+4. Como buena práctica, también deja una copia de los archivos “README.md” y “Licence” en el directorio “$HOME/.local/bin”.
 
 Puedes instalar Yazzdroid manualmente copiando el script en un directorio del path. Luego copiar el archivo del servicio en el directorio de systemd, activarlo e iniciarlo. Por defecto, el script de instalación utiliza el directorio de usuario para systemd; pero también es posible instalarlo en el directorio root.
 
@@ -53,6 +52,9 @@ Puedes desinstalar haciendo:
 
 → Eliminar el servicio
 > rm -f ~/.config/systemd/user/yazz-loop.service
+
+→ Eliminar la carpeta con el README y Licence
+> rm -f $HOME/.local/bin/yazzdroid
 
 ---
 ## Funciones
@@ -119,10 +121,10 @@ Hay 4 opciones para capturar la cámara. Pero en todas se puede seleccionar el �
 4. Trasera (con micrófono)
 
 
------
+---
 ---
 
-Yazzdroid se distribuye de manera gratuita bajo la licencia Apache 2.0.
+Yazzdroid es FOSS, y se distribuye de manera gratuita bajo la licencia Apache 2.0.
 Copyright (C) 2026 Yazilei
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -140,9 +142,8 @@ limitations under the License.
 ---
 ---
 
-Si te gusta el proyecto puedes apoyarme en mi Kofi 
+Si te gusta el proyecto puedes apoyarme en Kofi
 https://ko-fi.com/yazilei
 
 Encuentra mi arte en:
 https://linktr.ee/yazilei
-
